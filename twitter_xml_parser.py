@@ -2,11 +2,6 @@ import xml.etree.ElementTree as ET
 import os
 from html.parser import HTMLParser
 import pickle
-import sys
-import io
-
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf8')  # 改变标准输出的默认编码
-
 
 # loop directory
 def List(rootDir):
