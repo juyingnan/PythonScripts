@@ -8,14 +8,15 @@
 
 import sys
 
+roll_operation = [True, False]
+dice_point_list = [1, 2, 3, 4, 5, 6]
+
 
 # main function to solve the problem
 def solve(d_list):
     for dice in d_list:
         if dice <= 0:
             return "Wrong dice. Are you cheating?"
-    roll_operation = [True, False]
-    possible_dice_result = [1, 2, 3, 4, 5, 6]
     solution = [False, False, False]
     max_result = sum_three_dice(d_list)
     for roll_1 in roll_operation:
@@ -25,7 +26,7 @@ def solve(d_list):
                 roll_possible_result_list = []
                 possibility = 1.0
                 for i in range(0, len(d_list)):
-                    roll_possible_result_list.append(possible_dice_result if roll_decision_list[i] else [d_list[i]])
+                    roll_possible_result_list.append(dice_point_list if roll_decision_list[i] else [d_list[i]])
                     possibility /= len(roll_possible_result_list[i])
                 possible_result = 0
                 for d1 in roll_possible_result_list[0]:
