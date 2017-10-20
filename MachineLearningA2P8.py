@@ -9,8 +9,6 @@
 # step, one that performs the maximization step, and one that runs the outer loop. Be sure to include
 # all code and plots in your homework submission.
 
-import sys
-
 
 def get_data(path):
     result = []
