@@ -55,6 +55,17 @@ def get_deviation(data_list):
     return math.sqrt(d2)
 
 
+def get_log_likelihood(grouped_data_list):
+    flat_list = [data for group in grouped_data_list for data in group]
+    total_likelihood = 0.0
+    for data in flat_list:
+        for group in grouped_data_list:
+            likelihood = 1.0 * abs(data - get_expectation(group)) / get_deviation(group) \
+                         * len(grouped_data_list) / len(flat_list)
+            total_likelihood += (math.log(likelihood) if likelihood > 0 else 0)
+    return total_likelihood
+
+
 # main function
 # solve the problem
 # inputs are list and how many distributions in it
@@ -62,6 +73,7 @@ def solve(data_list, number_of_group):
     # get initial groups
     data_list.sort()
     grouped_list = get_divided_list(data_list, number_of_group)
+    log_likelihood_list = []
 
     # get expectation list that to be compared
     current_expectation_list = [get_expectation(group) for group in grouped_list]
@@ -84,23 +96,45 @@ def solve(data_list, number_of_group):
 
         # refresh group data
         grouped_list = temp_list
+        log_likelihood_list.append(get_log_likelihood(grouped_list))
         current_expectation_list = [get_expectation(group) for group in grouped_list]
         current_deviation_list = [get_deviation(group) for group in grouped_list]
-    return grouped_list
+    return grouped_list, log_likelihood_list
 
 
 # Test code
 # file name is data1.txt
 file_path = 'data1.txt'
 # Get data
-Initial_data_list = get_data(file_path)
+initial_data_list = get_data(file_path)
 # print(data)
 # Calculate data
-group_count = 3
-solution = solve(Initial_data_list, group_count)
+group_count = 4
+solution = solve(initial_data_list, group_count)
 # print result
-for distribution in solution:
-    print("Set ", solution.index(distribution) + 1)
+for distribution in solution[0]:
+    print("Set ", solution[0].index(distribution) + 1)
     print("\tExpectation: ", get_expectation(distribution))
     print("\tDeviation: ", get_deviation(distribution))
-    print("\tWeight: ", 1.0 * len(distribution) / sum([len(s) for s in solution]))
+    print("\tWeight: ", 1.0 * len(distribution) / sum([len(s) for s in solution[0]]))
+
+# Python实现正态分布
+# 绘制正态分布概率密度函数
+import numpy
+import matplotlib.pyplot as plt
+
+color_list = ["r-", "g-", "b-", "y-"]
+color_index = 0
+for distribution in solution[0]:
+    u = get_expectation(distribution)  # 均值μ
+    sig = get_deviation(distribution)  # 标准差δ
+    x = numpy.linspace(u - 3 * sig, u + 3 * sig, 50)
+    y_sig = numpy.exp(-(x - u) ** 2 / (2 * sig ** 2)) / (math.sqrt(2 * math.pi) * sig)
+    # plt.plot(x, y_sig, color_list[color_index % len(color_list)], linewidth=2)
+    color_index += 1
+    plt.grid(True)
+x = numpy.linspace(0, 5, 50)
+y = solution[1]
+plt.plot(range(len(y)), y, "b-", linewidth=2)
+plt.grid(True)
+plt.show()
