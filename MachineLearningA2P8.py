@@ -2,13 +2,18 @@
 # MachineLearningA2P8.py : About EM Algorithm
 # Yingnan Ju & Yue Chen, Oct 2017
 
-# This exercise will give you some practice coding the EM algorithm. We will apply the mixture of
+# "This exercise will give you some practice coding the EM algorithm. We will apply the mixture of
 # Gaussian technique to one-dimensional data . You will hand a data set on Canvas: data1(txt). Create
 # a program to estimate the means, standard deviations, and weights of a mixture of Gaussian via the
 # EM algorithm. You will probably want to have three functions: one that performs the expectation
 # step, one that performs the maximization step, and one that runs the outer loop. Be sure to include
-# all code and plots in your homework submission.
+# all code and plots in your homework submission."
 
+# instruction:
+# just run this file
+# data file path is data1.txt at line 112
+# count of mixture of Gaussian is at line 115: group_count = 3
+# change it to 2 or 4 for Question(b)
 
 import math
 
@@ -109,7 +114,8 @@ file_path = 'data1.txt'
 initial_data_list = get_data(file_path)
 # print(data)
 # Calculate data
-group_count = 4
+# change this group count to 2 or 4 for question(b)
+group_count = 3
 solution = solve(initial_data_list, group_count)
 # print result
 for distribution in solution[0]:
@@ -118,23 +124,24 @@ for distribution in solution[0]:
     print("\tDeviation: ", get_deviation(distribution))
     print("\tWeight: ", 1.0 * len(distribution) / sum([len(s) for s in solution[0]]))
 
-# Python实现正态分布
-# 绘制正态分布概率密度函数
-import numpy
-import matplotlib.pyplot as plt
-
-color_list = ["r-", "g-", "b-", "y-"]
-color_index = 0
-for distribution in solution[0]:
-    u = get_expectation(distribution)  # 均值μ
-    sig = get_deviation(distribution)  # 标准差δ
-    x = numpy.linspace(u - 3 * sig, u + 3 * sig, 50)
-    y_sig = numpy.exp(-(x - u) ** 2 / (2 * sig ** 2)) / (math.sqrt(2 * math.pi) * sig)
-    # plt.plot(x, y_sig, color_list[color_index % len(color_list)], linewidth=2)
-    color_index += 1
-    plt.grid(True)
-x = numpy.linspace(0, 5, 50)
-y = solution[1]
-plt.plot(range(len(y)), y, "b-", linewidth=2)
-plt.grid(True)
-plt.show()
+# Python plot
+# this part is to plot graph
+# uncomment this part to plot
+# import numpy
+# import matplotlib.pyplot as plt
+#
+# color_list = ["r-", "g-", "b-", "y-"]
+# color_index = 0
+# for distribution in solution[0]:
+#     u = get_expectation(distribution)  # μ
+#     sig = get_deviation(distribution)  # 差δ
+#     x = numpy.linspace(u - 3 * sig, u + 3 * sig, 50)
+#     y_sig = numpy.exp(-(x - u) ** 2 / (2 * sig ** 2)) / (math.sqrt(2 * math.pi) * sig)
+#     # plt.plot(x, y_sig, color_list[color_index % len(color_list)], linewidth=2)
+#     color_index += 1
+#     plt.grid(True)
+# x = numpy.linspace(0, 5, 50)
+# y = solution[1]
+# plt.plot(range(len(y)), y, "b-", linewidth=2)
+# plt.grid(True)
+# plt.show()
