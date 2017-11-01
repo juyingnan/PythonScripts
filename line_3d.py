@@ -8,7 +8,7 @@ def column(matrix, i):
 def derivative(list):
     return [list[i]-list[i-1] for i in range(1, len(list))]
 
-data1 = np.loadtxt("2017_31_10_11_21_20_position.txt")
+data1 = np.loadtxt("2017_31_10_11_25_49_position.txt")
 position_x =column(data1, 0)
 position_y =column(data1, 1)
 position_z =column(data1, 2)
