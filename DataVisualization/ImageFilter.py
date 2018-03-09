@@ -8,11 +8,14 @@ def calculate_transparent_ratio(file_path):
     img = cv2.imread(file_path, cv2.IMREAD_UNCHANGED)
     total_count = 0.0
     trans_count = 0.0
-    for row in img:
-        for pixel in row:
+    for row in img[::3]:
+        for pixel in row[::3]:
             total_count += 1
-            if pixel[3] == 0:
-                trans_count += 1
+            if len(pixel) > 3:
+                if pixel[3] == 0:
+                    trans_count += 1
+            else:
+                return 0.0
             # print(pixel[3], end=' ')
         # print()
     ratio = trans_count / total_count
@@ -20,13 +23,15 @@ def calculate_transparent_ratio(file_path):
     return ratio
 
 
-print(calculate_transparent_ratio('test.png'))
-
 fp = open('temp.txt', 'w')
+count = 0
 for root, dirs, files in os.walk(r'C:\Users\bunny\Desktop\images-227'):
     for file in files:
+        count += 1
         path = os.path.join(root, file)
         transparent_ratio = calculate_transparent_ratio(path)
         fp.write(path + '|' + transparent_ratio.__str__() + '\n')
+        if count % 500 == 0:
+            print(count)
         # print(calculate_transparent_ratio(path))
 fp.close()
