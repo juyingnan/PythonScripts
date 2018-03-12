@@ -28,7 +28,6 @@ def read_img(path, total_count):
         for im in glob.glob(folder + '/*.jpg'):
             # print('reading the images:%s'%(im))
             img = io.imread(im)
-            img = transform.resize(img, (w, h))
             imgs.append(img)
             labels.append(idx)
             count += 1
@@ -166,15 +165,16 @@ correct_prediction = tf.equal(tf.cast(tf.argmax(logits, 1), tf.int32), y_)
 acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # 训练和测试数据，可将n_epoch设置更大一些
-n_epoch = 100
+n_epoch = 1000
 current_batch_size = 64
 saver = tf.train.Saver()
 sess = tf.InteractiveSession()
 sess.run(tf.global_variables_initializer())
+result = open('result.txt', 'w')
 for epoch in range(n_epoch):
     start_time = time.time()
     print("Round %i:" % (epoch + 1))
-
+    result.write("Round %i:\n" % (epoch + 1))
     # training
     train_loss, train_acc, n_batch = 0, 0, 0
     for x_train_a, y_train_a in minibatches(x_train, y_train, current_batch_size, shuffle=True):
@@ -184,6 +184,8 @@ for epoch in range(n_epoch):
     n_batch += 1
     print("   train loss: %f" % (np.sum(train_loss) / n_batch))
     print("   train acc: %f" % (np.sum(train_acc) / n_batch))
+    result.write("   train loss: %f\n" % (np.sum(train_loss) / n_batch))
+    result.write("   train acc: %f\n" % (np.sum(train_acc) / n_batch))
 
     # validation
     val_loss, val_acc, n_batch = 0, 0, 0
@@ -194,5 +196,8 @@ for epoch in range(n_epoch):
     n_batch += 1
     print("   validation loss: %f" % (np.sum(val_loss) / n_batch))
     print("   validation acc: %f" % (np.sum(val_acc) / n_batch))
+    result.write("   validation loss: %f\n" % (np.sum(val_loss) / n_batch))
+    result.write("   validation acc: %f\n" % (np.sum(val_acc) / n_batch))
 saver.save(sess, model_path)
 sess.close()
+result.close()
