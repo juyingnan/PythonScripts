@@ -30,3 +30,4 @@ def resize_img(root_path, new_width, new_height):
                 print(count)
 
 resize_img(image_path, w, h)
+

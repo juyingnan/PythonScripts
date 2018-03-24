@@ -1,4 +1,4 @@
-from skimage import io, transform
+from skimage import io
 import glob
 import os
 import tensorflow as tf
@@ -19,7 +19,7 @@ category_count = 3
 learning_rate = 0.0001
 regularization_rate = 0.00001
 # 训练和测试数据，可将n_epoch设置更大一些
-n_epoch = 300
+n_epoch = 100
 current_batch_size = 100
 
 

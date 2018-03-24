@@ -1,4 +1,4 @@
-from skimage import io, transform
+from skimage import io
 import glob
 import os
 import tensorflow as tf
