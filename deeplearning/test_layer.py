@@ -11,20 +11,20 @@ image_path = 'c:/Users/bunny/Desktop/dataset1/root/'
 model_path = 'c:/Users/bunny/Desktop/dataset1/root/model.ckpt'
 
 # 将所有的图片resize成100*100
-w = 100
-h = 100
+w = 224
+h = 224
 c = 3
-image_count = 10000
-category_count = 8
+image_count = 5000
+category_count = 3
 learning_rate = 0.0001
 regularization_rate = 0.00001
 # 训练和测试数据，可将n_epoch设置更大一些
 n_epoch = 100
-current_batch_size = 256
+current_batch_size = 32
 
 
 # 读取图片
-def read_img(path, total_count, size_filter=2000):
+def read_img(path, total_count, size_filter=8000):
     cate = [path + folder for folder in os.listdir(path) if os.path.isdir(path + folder)]
     imgs = []
     labels = []
@@ -37,7 +37,15 @@ def read_img(path, total_count, size_filter=2000):
             file_size = file_info.st_size
             if file_size < size_filter:
                 continue
+
+            if file_size > 100 * size_filter:
+                # print(im)
+                continue
+
             img = io.imread(im)
+            if img.shape != (224,224,3):
+                # print(im)
+                continue
             imgs.append(img)
             labels.append(idx)
             count += 1
@@ -50,7 +58,7 @@ def read_img(path, total_count, size_filter=2000):
 # noinspection SpellCheckingInspection
 def inference(input_tensor, train, regularizer):
     with tf.variable_scope('layer1-conv1'):
-        conv1_weights = tf.get_variable("weight", [5, 5, 3, 32],
+        conv1_weights = tf.get_variable("weight", [3, 3, 3, 32],
                                         initializer=tf.truncated_normal_initializer(stddev=0.03))
         conv1_biases = tf.get_variable("bias", [32], initializer=tf.constant_initializer(0.0))
         conv1 = tf.nn.conv2d(input_tensor, conv1_weights, strides=[1, 1, 1, 1], padding='SAME')
@@ -60,7 +68,7 @@ def inference(input_tensor, train, regularizer):
         pool1 = tf.nn.max_pool(relu1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="VALID")
 
     with tf.variable_scope("layer3-conv2"):
-        conv2_weights = tf.get_variable("weight", [5, 5, 32, 64],
+        conv2_weights = tf.get_variable("weight", [3, 3, 32, 64],
                                         initializer=tf.truncated_normal_initializer(stddev=0.03))
         conv2_biases = tf.get_variable("bias", [64], initializer=tf.constant_initializer(0.0))
         conv2 = tf.nn.conv2d(pool1, conv2_weights, strides=[1, 1, 1, 1], padding='SAME')
@@ -80,16 +88,37 @@ def inference(input_tensor, train, regularizer):
         pool3 = tf.nn.max_pool(relu3, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
 
     with tf.variable_scope("layer7-conv4"):
-        conv4_weights = tf.get_variable("weight", [3, 3, 128, 128],
+        conv4_weights = tf.get_variable("weight", [3, 3, 128, 256],
                                         initializer=tf.truncated_normal_initializer(stddev=0.03))
-        conv4_biases = tf.get_variable("bias", [128], initializer=tf.constant_initializer(0.0))
+        conv4_biases = tf.get_variable("bias", [256], initializer=tf.constant_initializer(0.0))
         conv4 = tf.nn.conv2d(pool3, conv4_weights, strides=[1, 1, 1, 1], padding='SAME')
         relu4 = tf.nn.relu(tf.nn.bias_add(conv4, conv4_biases))
 
     with tf.name_scope("layer8-pool4"):
         pool4 = tf.nn.max_pool(relu4, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
-        nodes = 6 * 6 * 128
-        reshaped = tf.reshape(pool4, [-1, nodes])
+
+    with tf.variable_scope("layer9-conv5"):
+        conv5_weights = tf.get_variable("weight", [3, 3, 256, 512],
+                                        initializer=tf.truncated_normal_initializer(stddev=0.03))
+        conv5_biases = tf.get_variable("bias", [512], initializer=tf.constant_initializer(0.0))
+        conv5 = tf.nn.conv2d(pool4, conv5_weights, strides=[1, 1, 1, 1], padding='SAME')
+        relu5 = tf.nn.relu(tf.nn.bias_add(conv5, conv5_biases))
+
+    with tf.name_scope("layer10-pool5"):
+        pool5 = tf.nn.max_pool(relu5, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
+
+    with tf.variable_scope("layer11-conv6"):
+        conv6_weights = tf.get_variable("weight", [3, 3, 512, 1024],
+                                        initializer=tf.truncated_normal_initializer(stddev=0.03))
+        conv6_biases = tf.get_variable("bias", [1024], initializer=tf.constant_initializer(0.0))
+        conv6 = tf.nn.conv2d(pool5, conv6_weights, strides=[1, 1, 1, 1], padding='SAME')
+        relu6 = tf.nn.relu(tf.nn.bias_add(conv6, conv6_biases))
+
+    with tf.name_scope("layer12-pool6"):
+        pool6 = tf.nn.max_pool(relu6, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
+
+        nodes = 3 * 3 * 1024
+        reshaped = tf.reshape(pool6, [-1, nodes])
 
     with tf.variable_scope('layer9-fc1'):
         fc1_weights = tf.get_variable("weight", [nodes, 1024],
@@ -103,25 +132,36 @@ def inference(input_tensor, train, regularizer):
             fc1 = tf.nn.dropout(fc1, 0.5)
 
     with tf.variable_scope('layer10-fc2'):
-        fc2_weights = tf.get_variable("weight", [1024, 512],
+        fc2_weights = tf.get_variable("weight", [1024, 256],
                                       initializer=tf.truncated_normal_initializer(stddev=0.03))
         if regularizer is not None:
             tf.add_to_collection('losses', regularizer(fc2_weights))
-        fc2_biases = tf.get_variable("bias", [512], initializer=tf.constant_initializer(0.1))
+        fc2_biases = tf.get_variable("bias", [256], initializer=tf.constant_initializer(0.1))
 
         fc2 = tf.nn.relu(tf.matmul(fc1, fc2_weights) + fc2_biases)
         if train:
             fc2 = tf.nn.dropout(fc2, 0.5)
 
     with tf.variable_scope('layer11-fc3'):
-        fc3_weights = tf.get_variable("weight", [512, category_count],
+        fc3_weights = tf.get_variable("weight", [256, 64],
                                       initializer=tf.truncated_normal_initializer(stddev=0.03))
         if regularizer is not None:
             tf.add_to_collection('losses', regularizer(fc3_weights))
-        fc3_biases = tf.get_variable("bias", [category_count], initializer=tf.constant_initializer(0.1))
-        fc3 = tf.matmul(fc2, fc3_weights) + fc3_biases
+        fc3_biases = tf.get_variable("bias", [64], initializer=tf.constant_initializer(0.1))
 
-    return fc3
+        fc3 = tf.nn.relu(tf.matmul(fc2, fc3_weights) + fc3_biases)
+        if train:
+            fc3 = tf.nn.dropout(fc3, 0.5)
+
+    with tf.variable_scope('layer12-fc4'):
+        fc4_weights = tf.get_variable("weight", [64, category_count],
+                                      initializer=tf.truncated_normal_initializer(stddev=0.03))
+        if regularizer is not None:
+            tf.add_to_collection('losses', regularizer(fc4_weights))
+        fc4_biases = tf.get_variable("bias", [category_count], initializer=tf.constant_initializer(0.1))
+        fc4 = tf.matmul(fc3, fc4_weights) + fc4_biases
+
+    return fc4
 
 
 # 定义一个函数，按批次取数据

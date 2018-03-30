@@ -6,9 +6,9 @@ import numpy as np
 import time
 
 # 数据集地址
-image_path = 'c:/Users/bunny/Desktop/dataset1/root/'
+image_path = 'c:/Users/bunny/Desktop/dataset1_small/root/'
 # 模型保存地址
-model_path = 'c:/Users/bunny/Desktop/dataset1/root/model.ckpt'
+model_path = 'c:/Users/bunny/Desktop/dataset1_small/root/model.ckpt'
 
 # 将所有的图片resize成100*100
 w = 100
@@ -20,7 +20,7 @@ learning_rate = 0.0001
 regularization_rate = 0.00001
 # 训练和测试数据，可将n_epoch设置更大一些
 n_epoch = 100
-current_batch_size = 100
+current_batch_size = 16
 
 
 # 读取图片
@@ -50,7 +50,7 @@ def read_img(path, total_count, size_filter=2000):
 # noinspection SpellCheckingInspection
 def inference(input_tensor, train, regularizer):
     with tf.variable_scope('layer1-conv1'):
-        conv1_weights = tf.get_variable("weight", [5, 5, 3, 32],
+        conv1_weights = tf.get_variable("weight", [3, 3, 3, 32],
                                         initializer=tf.truncated_normal_initializer(stddev=0.03))
         conv1_biases = tf.get_variable("bias", [32], initializer=tf.constant_initializer(0.0))
         conv1 = tf.nn.conv2d(input_tensor, conv1_weights, strides=[1, 1, 1, 1], padding='SAME')
@@ -60,7 +60,7 @@ def inference(input_tensor, train, regularizer):
         pool1 = tf.nn.max_pool(relu1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding="VALID")
 
     with tf.variable_scope("layer3-conv2"):
-        conv2_weights = tf.get_variable("weight", [5, 5, 32, 64],
+        conv2_weights = tf.get_variable("weight", [3, 3, 32, 64],
                                         initializer=tf.truncated_normal_initializer(stddev=0.03))
         conv2_biases = tf.get_variable("bias", [64], initializer=tf.constant_initializer(0.0))
         conv2 = tf.nn.conv2d(pool1, conv2_weights, strides=[1, 1, 1, 1], padding='SAME')
