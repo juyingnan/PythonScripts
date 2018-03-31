@@ -37,7 +37,7 @@
 
 import json
 import os
-from cache import Cache
+from B657_Project.cache import cache
 
 ########################################################################
 
@@ -175,7 +175,7 @@ def load_records(train=True):
     # If the data-records already exist in a cache-file then load it,
     # otherwise call the _load_records() function and save its
     # return-values to the cache-file so it can be loaded the next time.
-    records = Cache(cache_path=cache_path,
+    records = cache(cache_path=cache_path,
                     fn=_load_records,
                     train=train)
 

@@ -4,11 +4,9 @@ from matplotlib.colors import LinearSegmentedColormap
 from skimage import io
 
 # Create an artificial color close to the orginal one
-cmap_hema = LinearSegmentedColormap.from_list('mycmap', ['white', 'darkviolet'])
-cmap_dab = LinearSegmentedColormap.from_list('mycmap', ['white',
-                                                        'pink'])
-cmap_eosin = LinearSegmentedColormap.from_list('mycmap', ['gray',
-                                                          'white'])
+cmap_hema = LinearSegmentedColormap.from_list('mycmap', ['white', 'purple'])
+cmap_dab = LinearSegmentedColormap.from_list('mycmap', ['white', 'darkviolet'])
+cmap_eosin = LinearSegmentedColormap.from_list('mycmap', ['darkviolet', 'white'])
 
 image_path1 = 'c:/Users/bunny/Desktop/test2.jpg'
 ihc_rgb = io.imread(image_path1)
