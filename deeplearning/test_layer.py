@@ -11,20 +11,20 @@ image_path = 'c:/Users/bunny/Desktop/dataset1/root/'
 model_path = 'c:/Users/bunny/Desktop/dataset1/root/model.ckpt'
 
 # 将所有的图片resize成100*100
-w = 224
-h = 224
+w = 100
+h = 100
 c = 3
-image_count = 5000
+image_count = 10000
 category_count = 3
 learning_rate = 0.0001
 regularization_rate = 0.00001
 # 训练和测试数据，可将n_epoch设置更大一些
 n_epoch = 100
-current_batch_size = 32
+current_batch_size = 64
 
 
 # 读取图片
-def read_img(path, total_count, size_filter=8000):
+def read_img(path, total_count, size_filter=1500):
     cate = [path + folder for folder in os.listdir(path) if os.path.isdir(path + folder)]
     imgs = []
     labels = []
@@ -37,14 +37,12 @@ def read_img(path, total_count, size_filter=8000):
             file_size = file_info.st_size
             if file_size < size_filter:
                 continue
-
             if file_size > 100 * size_filter:
                 # print(im)
                 continue
-
             img = io.imread(im)
-            if img.shape != (224,224,3):
-                # print(im)
+            if img.shape != (w,h,3):
+                print(im)
                 continue
             imgs.append(img)
             labels.append(idx)
@@ -107,18 +105,8 @@ def inference(input_tensor, train, regularizer):
     with tf.name_scope("layer10-pool5"):
         pool5 = tf.nn.max_pool(relu5, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
 
-    with tf.variable_scope("layer11-conv6"):
-        conv6_weights = tf.get_variable("weight", [3, 3, 512, 1024],
-                                        initializer=tf.truncated_normal_initializer(stddev=0.03))
-        conv6_biases = tf.get_variable("bias", [1024], initializer=tf.constant_initializer(0.0))
-        conv6 = tf.nn.conv2d(pool5, conv6_weights, strides=[1, 1, 1, 1], padding='SAME')
-        relu6 = tf.nn.relu(tf.nn.bias_add(conv6, conv6_biases))
-
-    with tf.name_scope("layer12-pool6"):
-        pool6 = tf.nn.max_pool(relu6, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
-
-        nodes = 3 * 3 * 1024
-        reshaped = tf.reshape(pool6, [-1, nodes])
+        nodes = 3 * 3 * 512
+        reshaped = tf.reshape(pool5, [-1, nodes])
 
     with tf.variable_scope('layer9-fc1'):
         fc1_weights = tf.get_variable("weight", [nodes, 1024],

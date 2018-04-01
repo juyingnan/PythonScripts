@@ -14,17 +14,17 @@ model_path = 'c:/Users/bunny/Desktop/dataset1/root/model.ckpt'
 w = 100
 h = 100
 c = 3
-image_count = 1000
+image_count = 10000
 category_count = 3
 learning_rate = 0.0001
 regularization_rate = 0.00001
 # 训练和测试数据，可将n_epoch设置更大一些
 n_epoch = 100
-current_batch_size = 16
+current_batch_size = 64
 
 
 # 读取图片
-def read_img(path, total_count, size_filter=2000):
+def read_img(path, total_count, size_filter=1500):
     cate = [path + folder for folder in os.listdir(path) if os.path.isdir(path + folder)]
     imgs = []
     labels = []
@@ -36,6 +36,13 @@ def read_img(path, total_count, size_filter=2000):
             file_info = os.stat(im)
             file_size = file_info.st_size
             if file_size < size_filter:
+                continue
+            if file_size > 100 * size_filter:
+                # print(im)
+                continue
+            img = io.imread(im)
+            if img.shape != (w, h, 3):
+                print(im)
                 continue
             img = io.imread(im)
             imgs.append(img)
