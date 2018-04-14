@@ -60,3 +60,4 @@ target/
 .idea/dictionaries/
 .idea/inspectionProfiles/
 clList.txt
+.idea/other.xml
