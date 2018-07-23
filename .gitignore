@@ -61,3 +61,6 @@ target/
 .idea/inspectionProfiles/
 clList.txt
 .idea/other.xml
+.idea/PythonScripts.iml
+.idea/modules.xml
+.idea/vcs.xml
