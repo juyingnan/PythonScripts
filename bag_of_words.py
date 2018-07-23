@@ -28,12 +28,12 @@ def get_full_word_from_line(line, without_at_and_sharp):
 is_remove_at_and_sharp = True
 translator = get_translator('@#')
 
-train_file_path = r'C:\Users\bunny\Desktop\test.txt'
-test_file_path = r'C:\Users\bunny\Desktop\test2.txt'
+train_file_path = r'C:\Users\bunny\Desktop\Xtrain'
+test_file_path = r'C:\Users\bunny\Desktop\Xtest'
 
 # get content from train and test file and combine them in a full_lines
-train_lines = open(train_file_path, 'r')
-test_lines = open(test_file_path, 'r')
+train_lines = open(train_file_path, 'r', encoding='utf8')
+test_lines = open(test_file_path, 'r', encoding='utf8')
 train_lines = [line for line in train_lines]
 test_lines = [line for line in test_lines]
 full_lines = train_lines + test_lines
