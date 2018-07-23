@@ -2,6 +2,7 @@ import string
 import csv
 import os
 
+
 # get a punctuation translator to remove punctuation,
 # parameter is a string that includes all punctuation that you don't want to remove
 # e.g. if you don't want to remove '#' and '@' from a tweet, just use '@#' as the parameter
@@ -24,6 +25,7 @@ def get_full_word_from_line(line, without_at_and_sharp):
         filtered_words = [_word for _word in filtered_words if not (_word.startswith('@') or _word.startswith('#'))]
     filtered_words = [_word for _word in filtered_words if len(_word) > 0]
     return filtered_words
+
 
 def write_csv(file_path, content, dilimiter='\t'):
     with open(file_path, 'w', newline='') as csv_file:
@@ -75,4 +77,3 @@ output_train_path = os.path.dirname(os.path.realpath(train_file_path)) + '/train
 output_test_path = os.path.dirname(os.path.realpath(test_file_path)) + '/test_matrix.tsv'
 write_csv(output_train_path, train_matrix, '\t')
 write_csv(output_test_path, test_matrix, '\t')
-
