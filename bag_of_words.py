@@ -26,7 +26,7 @@ def get_full_word_from_line(line, without_at_and_sharp):
     return filtered_words
 
 
-is_remove_at_and_sharp = False
+is_remove_at_and_sharp = True
 translator = get_translator('@#')
 
 train_file_path = r'C:\Users\bunny\Desktop\test.txt'
@@ -36,9 +36,7 @@ test_file_path = r'C:\Users\bunny\Desktop\test2.txt'
 train_lines = open(train_file_path, 'r')
 test_lines = open(test_file_path, 'r')
 train_lines = [line for line in train_lines]
-train_lines_number = len(train_lines)
 test_lines = [line for line in test_lines]
-test_lines_number = len(test_lines)
 full_lines = train_lines + test_lines
 
 # get a full word list that includes all word from train and test tweets
@@ -64,5 +62,5 @@ for line in full_lines:
 #     print(line)
 
 # get train and test matrix
-train_matrix = full_matrix[:train_lines_number]
-test_matrix = full_matrix[train_lines_number:]
+train_matrix = full_matrix[:len(train_lines)]
+test_matrix = full_matrix[len(train_lines):]
