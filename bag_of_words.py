@@ -16,12 +16,11 @@ def get_translator(exclude_chars=''):
 #   True: remove all words starting with '@' and '#'
 #   False: keep all words starting with '@' and '#'
 def get_full_word_from_line(line, without_at_and_sharp):
-    full_words = line.split()
+    filtered_line = line.translate(translator)
+    full_words = filtered_line.split()
     filtered_words = [_word for _word in full_words if not _word.startswith('http')]
     if without_at_and_sharp:
         filtered_words = [_word for _word in filtered_words if not (_word.startswith('@') or _word.startswith('#'))]
-    for i in range(len(filtered_words)):
-        filtered_words[i] = filtered_words[i].translate(translator)
     filtered_words = [_word for _word in filtered_words if len(_word) > 0]
     return filtered_words
 
@@ -46,7 +45,7 @@ for line in full_lines:
     for word in words:
         if word not in full_word_list:
             full_word_list.append(word)
-    # print(words)
+#     print(words)
 # print(full_word_list)
 total_words_number = len(full_word_list)
 
