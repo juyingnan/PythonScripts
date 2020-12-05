@@ -1,2 +1,2 @@
 # PythonScripts
-For Zhu's Python Course
+Some small scripts
